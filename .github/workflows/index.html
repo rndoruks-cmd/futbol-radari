@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Futbol Radarı</title>
+<style>
+:root {
+  --site-primary: #102d27;
+  --site-on-primary: #ffffff;
+  --site-secondary: #d7ff65;
+  --site-on-secondary: #142018;
+  --site-background: #07130f;
+  --site-on-background: #edf5ef;
+  --site-font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --site-font-heading: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --site-heading-scale: 1;
+  --site-spacing-scale: 1;
+  --site-radius-scale: 1;
+  --site-decoration-opacity: 1;
+  color-scheme: light dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--site-font-body); background: light-dark(#f1f5f2, var(--site-background)); color: light-dark(#14211b, var(--site-on-background)); }
+#app { min-height: 100vh; width: 100%; border-radius: 0; background-color: light-dark(#f1f5f2, var(--site-background)); color: light-dark(#14211b, var(--site-on-background)); }
+.topbar { background: var(--site-primary); color: var(--site-on-primary); border-bottom: 1px solid rgba(255,255,255,.1); }
+.wrap { width: min(1180px, calc(100% - 36px)); margin: auto; }
+.nav { min-height: 74px; display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.brand { display:flex; align-items:center; gap:11px; font-weight:900; letter-spacing:-1px; font-size:22px; }
+.brand-mark { width:38px; height:38px; border-radius:12px; display:grid; place-items:center; background:var(--site-secondary); color:var(--site-on-secondary); font-size:20px; }
+.brand span em { color:var(--site-secondary); font-style:normal; }
+.navlinks { display:flex; gap:23px; align-items:center; color:#d4e4dc; font-size:13px; font-weight:700; }
+.navlinks a { color:inherit; text-decoration:none; }
+.navlinks a:hover { color:var(--site-secondary); }
+.search { border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.08); color:white; border-radius:11px; padding:10px 13px; width:190px; outline:none; }
+.hero { padding:37px 0 30px; background: radial-gradient(ellipse at 80% 20%, rgba(215,255,101,.12), transparent 35%), var(--site-primary); color:white; }
+.hero-grid { display:grid; grid-template-columns:1.3fr .7fr; gap:24px; align-items:center; }
+.kicker { display:inline-flex; align-items:center; gap:8px; color:var(--site-secondary); font-size:11px; font-weight:900; letter-spacing:1.6px; text-transform:uppercase; }
+.pulse { width:7px; height:7px; background:#ff5b5b; border-radius:50%; box-shadow:0 0 0 5px rgba(255,91,91,.14); }
+h1 { font-family:var(--site-font-heading); font-size:calc(48px * var(--site-heading-scale)); line-height:1.02; letter-spacing:-2.5px; margin:14px 0 12px; max-width:640px; }
+.hero p { color:#c1d3ca; max-width:580px; line-height:1.65; font-size:14px; margin:0; }
+.hero-card { background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:calc(18px * var(--site-radius-scale)); padding:18px; }
+.hero-card-top { display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#d5e5dc; font-weight:800; text-transform:uppercase; letter-spacing:1px; }
+.live-tag { color:#ff8d8d; display:flex; align-items:center; gap:7px; }
+.feature-match { display:flex; justify-content:space-around; align-items:center; padding:22px 0 15px; }
+.club { text-align:center; min-width:85px; }
+.crest { width:49px; height:49px; display:grid; place-items:center; border-radius:15px; background:rgba(255,255,255,.12); font-size:25px; margin:0 auto 8px; }
+.club b { font-size:12px; }
+.score { font-size:32px; font-weight:900; letter-spacing:2px; }
+.match-foot { text-align:center; color:#b7c9c0; font-size:11px; border-top:1px solid rgba(255,255,255,.1); padding-top:12px; }
+main { padding:27px 0 55px; }
+.section-head { display:flex; align-items:end; justify-content:space-between; margin:0 0 15px; gap:12px; }
+.section-head h2 { margin:0; font-size:19px; letter-spacing:-.5px; }
+.section-head small { color:light-dark(#6a7b71,#8fa69a); font-size:11px; }
+.grid-main { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(270px,.75fr); gap:22px; align-items:start; }
+.panel { background:light-dark(#fff,#102019); border:1px solid light-dark(#e0e8e2,#1d382b); border-radius:calc(16px * var(--site-radius-scale)); overflow:hidden; }
+.panel-head { display:flex; justify-content:space-between; align-items:center; padding:15px 17px; border-bottom:1px solid light-dark(#e8eee9,#203a2d); }
+.panel-head strong { font-size:13px; }
+.tabs { display:flex; gap:5px; }
+.tab { border:0; border-radius:8px; padding:7px 10px; background:transparent; color:light-dark(#6c7d72,#a0b4a8); font-size:11px; font-weight:800; cursor:pointer; }
+.tab.active { background:var(--site-secondary); color:var(--site-on-secondary); }
+.match-row { display:grid; grid-template-columns:62px 1fr 58px 1fr 55px; align-items:center; gap:8px; padding:13px 16px; border-bottom:1px solid light-dark(#edf1ed,#1d3529); }
+.match-row:last-child { border-bottom:0; }
+.time { color:light-dark(#728177,#9ab0a3); font-size:11px; font-weight:800; }
+.team { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:750; }
+.team.right { justify-content:flex-end; text-align:right; }
+.mini-crest { width:25px; height:25px; border-radius:8px; display:grid; place-items:center; background:light-dark(#edf3ee,#1b3528); font-size:14px; flex-shrink:0; }
+.result { text-align:center; font-weight:900; font-size:14px; }
+.status { justify-self:end; font-size:9px; color:#ff7474; font-weight:900; }
+.status.upcoming { color:light-dark(#728177,#9ab0a3); }
+.league-label { padding:10px 16px 6px; color:light-dark(#829087,#8ea598); font-size:10px; font-weight:900; letter-spacing:1px; text-transform:uppercase; background:light-dark(#f8faf8,#0d1a14); }
+.table { width:100%; border-collapse:collapse; font-size:11px; }
+.table th { text-align:left; padding:10px 12px; color:light-dark(#849188,#91a89a); font-size:9px; letter-spacing:.7px; }
+.table td { padding:10px 12px; border-top:1px solid light-dark(#edf1ed,#1d3529); font-weight:700; }
+.table td:not(:nth-child(2)) { text-align:center; }
+.rank { color:light-dark(#8a998f,#93a99c); width:22px; }
+.clubname { display:flex; align-items:center; gap:7px; }
+.points { color:var(--site-secondary); font-weight:900; }
+.news-list { display:grid; gap:0; }
+.news-item { padding:14px 16px; border-bottom:1px solid light-dark(#edf1ed,#1d3529); }
+.news-item:last-child { border-bottom:0; }
+.news-tag { color:#7e9b88; font-size:9px; font-weight:900; letter-spacing:1px; text-transform:uppercase; }
+.news-item h3 { margin:6px 0 5px; font-size:13px; line-height:1.4; }
+.news-item p { margin:0; color:light-dark(#718076,#9bb0a3); font-size:11px; line-height:1.5; }
+.lower-grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:23px; }
+.player { display:flex; gap:12px; align-items:center; padding:15px 17px; border-bottom:1px solid light-dark(#edf1ed,#1d3529); }
+.player:last-child { border-bottom:0; }
+.avatar { width:43px; height:43px; border-radius:13px; background:linear-gradient(145deg,#d7ff65,#719c43); color:#102d27; display:grid; place-items:center; font-size:19px; font-weight:900; }
+.player-info { flex:1; }
+.player-info b { display:block; font-size:12px; }
+.player-info small { color:light-dark(#75847a,#9bb0a3); font-size:10px; }
+.metric { font-weight:900; font-size:17px; }
+.metric small { display:block; font-size:9px; color:light-dark(#78877d,#93a99b); font-weight:700; text-align:right; }
+footer { background:var(--site-primary); color:#b8ccc1; padding:23px 0; font-size:11px; }
+.footer-row { display:flex; justify-content:space-between; gap:15px; flex-wrap:wrap; }
+.disclaimer { color:light-dark(#718076,#81988b); font-size:10px; margin-top:18px; line-height:1.5; }
+@media(max-width:800px) { .navlinks { display:none; } .search { width:145px; } .hero-grid,.grid-main,.lower-grid { grid-template-columns:1fr; } h1 { font-size:38px; } .hero-card { max-width:500px; } }
+@media(max-width:480px) { .wrap { width:calc(100% - 24px); } .nav { min-height:64px; } .brand { font-size:18px; } .brand-mark { width:33px;height:33px; } .search { width:116px; font-size:11px; } .hero { padding:28px 0 24px; } h1 { font-size:34px; letter-spacing:-1.8px; } .match-row { grid-template-columns:42px 1fr 43px 1fr 35px; gap:4px; padding:12px 9px; } .team { gap:5px; font-size:10px; } .mini-crest { width:21px;height:21px;font-size:12px; } .time { font-size:10px; } .status { font-size:8px; } .panel-head { padding:13px 12px; } .table th,.table td { padding:9px 8px; } }
+</style>
+</head>
+<body>
+<div id="app">
+<header class="topbar">
+  <div class="wrap nav">
+    <div class="brand"><div class="brand-mark">⚽</div><span>FUTBOL <em>RADARI</em></span></div>
+    <nav class="navlinks"><a href="#maclar">Maçlar</a><a href="#puan">Puan Durumu</a><a href="#haberler">Haberler</a><a href="#oyuncular">Oyuncular</a></nav>
+    <input class="search" id="search" placeholder="Takım veya futbolcu ara…" aria-label="Takım veya futbolcu ara">
+  </div>
+</header>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div><div class="kicker"><span class="pulse"></span> Futbolun nabzı burada</div><h1>Oyunun her anı,<br>tek bir <span style="color:var(--site-secondary)">radarda.</span></h1><p>Maçlar, skorlar, puan durumları, transfer gelişmeleri ve futbolun konuşulan hikâyeleri. Takip etmek istediğin her şey tek yerde.</p></div>
+    <div class="hero-card"><div class="hero-card-top"><span>Öne çıkan karşılaşma</span><span class="live-tag"><span class="pulse"></span> ÖRNEK</span></div><div class="feature-match"><div class="club"><div class="crest">🟡🔵</div><b>Fenerbahçe</b></div><div class="score">2 : 1</div><div class="club"><div class="crest">🔴🟡</div><b>Galatasaray</b></div></div><div class="match-foot">Derbi merkezi · Demo skor / gerçek zamanlı veri bağlı değil</div></div>
+  </div>
+</section>
+<main class="wrap">
+  <div class="grid-main">
+    <section id="maclar">
+      <div class="section-head"><div><h2>Maç merkezi</h2><small>Günün karşılaşmaları</small></div><small>03 KASIM 2026 · DEMO</small></div>
+      <div class="panel">
+        <div class="panel-head"><strong>Fikstür ve sonuçlar</strong><div class="tabs"><button class="tab active" data-filter="all">Tümü</button><button class="tab" data-filter="live">Canlı</button><button class="tab" data-filter="upcoming">Yaklaşan</button></div></div>
+        <div class="league-label">🇹🇷 Trendyol Süper Lig</div>
+        <div id="matches">
+          <div class="match-row" data-state="live"><div class="time">20:00</div><div class="team"><span class="mini-crest">🟡🔵</span>Fenerbahçe</div><div class="result">2 - 1</div><div class="team right">Beşiktaş<span class="mini-crest">⚫⚪</span></div><div class="status">CANLI</div></div>
+          <div class="match-row" data-state="upcoming"><div class="time">22:00</div><div class="team"><span class="mini-crest">🔴🟡</span>Galatasaray</div><div class="result">- : -</div><div class="team right">Trabzonspor<span class="mini-crest">🔵🔴</span></div><div class="status upcoming">22:00</div></div>
+          <div class="league-label">🏆 UEFA Şampiyonlar Ligi</div>
+          <div class="match-row" data-state="upcoming"><div class="time">19:45</div><div class="team"><span class="mini-crest">🔴</span>Liverpool</div><div class="result">- : -</div><div class="team right">Real Madrid<span class="mini-crest">⚪</span></div><div class="status upcoming">19:45</div></div>
+          <div class="match-row" data-state="upcoming"><div class="time">22:00</div><div class="team"><span class="mini-crest">🔵🔴</span>Barcelona</div><div class="result">- : -</div><div class="team right">Inter<span class="mini-crest">🔵⚫</span></div><div class="status upcoming">22:00</div></div>
+        </div>
+      </div>
+      <div class="disclaimer">Bu ekrandaki maçlar, skorlar ve tarihler tasarım demosu için örnek veridir; canlı fikstür veya sonuç olarak kullanılmamalıdır.</div>
+    </section>
+    <aside>
+      <div class="section-head"><div><h2>Günün gündemi</h2><small>Futbol dünyasından öne çıkanlar</small></div></div>
+      <div class="panel news-list" id="haberler">
+        <article class="news-item"><div class="news-tag">Transfer · Demo içerik</div><h3>Avrupa devlerinin radarındaki genç yıldızlar</h3><p>Sezonun dikkat çeken genç oyuncuları ve olası transfer senaryoları.</p></article>
+        <article class="news-item"><div class="news-tag">Süper Lig · Analiz</div><h3>Zirve yarışında dengeleri değiştirebilecek 3 detay</h3><p>Form grafiği, fikstür yoğunluğu ve kadro derinliği.</p></article>
+        <article class="news-item"><div class="news-tag">Avrupa · Hikâye</div><h3>Bir futbolcunun kariyerini değiştiren tek maç</h3><p>Futbolun unutulmayan kırılma anlarından biri.</p></article>
+      </div>
+    </aside>
+  </div>
+  <div class="lower-grid">
+    <section id="puan"><div class="section-head"><div><h2>Süper Lig puan durumu</h2><small>Örnek sıralama</small></div></div><div class="panel"><table class="table"><thead><tr><th>#</th><th>TAKIM</th><th>O</th><th>AV</th><th>PUAN</th></tr></thead><tbody>
+      <tr><td class="rank">1</td><td><span class="clubname">🟡🔵 Fenerbahçe</span></td><td>10</td><td>+14</td><td class="points">25</td></tr>
+      <tr><td class="rank">2</td><td><span class="clubname">🔴🟡 Galatasaray</span></td><td>10</td><td>+12</td><td class="points">24</td></tr>
+      <tr><td class="rank">3</td><td><span class="clubname">🔵🔴 Trabzonspor</span></td><td>10</td><td>+7</td><td class="points">21</td></tr>
+      <tr><td class="rank">4</td><td><span class="clubname">⚫⚪ Beşiktaş</span></td><td>10</td><td>+5</td><td class="points">19</td></tr>
+      <tr><td class="rank">5</td><td><span class="clubname">🟠 Alanyaspor</span></td><td>10</td><td>+2</td><td class="points">16</td></tr>
+    </tbody></table></div></section>
+    <section id="oyuncular"><div class="section-head"><div><h2>Oyuncu radarı</h2><small>Takip edilen isimler · örnek</small></div></div><div class="panel">
+      <div class="player"><div class="avatar">V</div><div class="player-info"><b>Victor Osimhen</b><small>Forvet · Galatasaray</small></div><div class="metric">8<small>GOL</small></div></div>
+      <div class="player"><div class="avatar">A</div><div class="player-info"><b>Arda Güler</b><small>Orta saha · Real Madrid</small></div><div class="metric">6<small>ASİST</small></div></div>
+      <div class="player"><div class="avatar">L</div><div class="player-info"><b>Lamine Yamal</b><small>Kanat · Barcelona</small></div><div class="metric">7<small>GOL</small></div></div>
+    </div></section>
+  </div>
+</main>
+<footer><div class="wrap"><div class="footer-row"><strong>⚽ FUTBOL RADARI</strong><span>Futbolu takip et. Oyunun içinde kal.</span><span>© 2026 Futbol Radarı · Tasarım önizlemesi</span></div></div></footer>
+</div>
+<script>
+const tabs = document.querySelectorAll('.tab');
+tabs.forEach(tab => tab.addEventListener('click', () => {
+  tabs.forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  document.querySelectorAll('.match-row').forEach(row => {
+    row.style.display = tab.dataset.filter === 'all' || row.dataset.state === tab.dataset.filter ? 'grid' : 'none';
+  });
+}));
+document.getElementById('search').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.value.trim()) {
+    const term = e.target.value.trim().toLocaleLowerCase('tr');
+    const matches = [...document.querySelectorAll('.match-row')].filter(row => row.innerText.toLocaleLowerCase('tr').includes(term));
+    document.getElementById('maclar').scrollIntoView({behavior:'smooth'});
+    document.querySelectorAll('.match-row').forEach(row => row.style.outline = matches.includes(row) ? '2px solid #9ac83e' : 'none');
+  }
+});
+</script>
+</body>
+</html>
